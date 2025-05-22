@@ -10,7 +10,7 @@ from telegram.ext import (
 )
 
 # Токен бота (замените на свой)
-TOKEN = os.getenv("BOT_TOKEN")
+TOKEN = os.getenv("7739154280:AAH_zjCongHGonDj00e-xYRhuji5I-B-s4U")
 
 def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text("Использование: @BotShotBot txt @")
