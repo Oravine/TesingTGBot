@@ -18,7 +18,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 
 def start(update: Update, context: CallbackContext) -> None:
     """Обработчик команды /start"""
-    update.message.reply_text("Используйте бота через инлайн-режим: @BotShotBot получатель сообщение")
+    update.message.reply_text("Бот работает через инлайн режим: @PM_ChBot")
 
 def handle_inline_button(update: Update, context: CallbackContext) -> None:
     """Обработчик нажатий на инлайн-кнопки"""
@@ -42,7 +42,7 @@ def handle_inline_button(update: Update, context: CallbackContext) -> None:
     if (current_user.username and current_user.username.lower() == recipient_username.lower()) or current_user.id == sender_id:
         query.answer(message_text, show_alert=True)
     else:
-        query.answer("🔒 Это сообщение не для вас", show_alert=True)
+        query.answer("⚠️🔒 Это сообщение не для вас.", show_alert=True)
 
 def handle_inline_query(update: Update, context: CallbackContext) -> None:
     """Обработчик инлайн-запросов"""
@@ -66,7 +66,7 @@ def handle_inline_query(update: Update, context: CallbackContext) -> None:
             title=f"Отправить {recipient_username}",
             description=message_text[:100],  # Показываем начало сообщения
             input_message_content=InputTextMessageContent(
-                f"🔒 Личное сообщение для @{recipient_username}. Нажмите кнопку ниже."
+                f"<b>🔒 Личное сообщение для @{recipient_username}.</b>\nНажмите кнопку ниже, чтобы прочитать его. <i>Сообщение увидите только вы.</i>"
             ),
             reply_markup=InlineKeyboardMarkup([[
                 InlineKeyboardButton(
