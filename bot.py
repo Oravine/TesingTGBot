@@ -17,12 +17,12 @@ from telegram.ext import (
 TOKEN = os.getenv("BOT_TOKEN")
 
 def start(update: Update, context: CallbackContext) -> None:
-    """Обработчик команды /start с HTML-форматированием"""
+    """Обработчик команды /start"""
     help_text = '<b>Используйте бота в инлайн режиме!</b>\n\nНапишите в любой чат:\n<pre>@Druobot [получатель] [сообщение]</pre>'
     update.message.reply_text(help_text, parse_mode='HTML')
 
 def handle_inline_button(update: Update, context: CallbackContext) -> None:
-    """Обработчик нажатий на инлайн-кнопки с HTML"""
+    """Обработчик нажатий на инлайн-кнопки"""
     query = update.callback_query
     data = query.data.split(":")
     
@@ -39,19 +39,14 @@ def handle_inline_button(update: Update, context: CallbackContext) -> None:
         query.answer("❌ Ошибка: неверный ID отправителя")
         return
 
-    # Форматируем текст сообщения с HTML
-    formatted_text = f"""
-<b>🔒 Личное сообщение:</b>
-<i>{html.escape(message_text)}</i>
-"""
     # Проверяем, кто нажал на кнопку
     if (current_user.username and current_user.username.lower() == recipient_username.lower()) or current_user.id == sender_id:
-        query.answer(formatted_text, show_alert=True, parse_mode='HTML')
+        query.answer(message_text, show_alert=True)  # Теперь без форматирования
     else:
         query.answer("🔒 Это сообщение не для вас", show_alert=True)
 
 def handle_inline_query(update: Update, context: CallbackContext) -> None:
-    """Обработчик инлайн-запросов с HTML"""
+    """Обработчик инлайн-запросов"""
     query_text = update.inline_query.query.strip()
     
     if not query_text:
@@ -94,10 +89,9 @@ def main() -> None:
     dispatcher.add_handler(CallbackQueryHandler(handle_inline_button))
     dispatcher.add_handler(InlineQueryHandler(handle_inline_query))
 
-    print("Бот запущен с поддержкой HTML-форматирования...")
+    print("Бот запущен...")
     updater.start_polling()
     updater.idle()
 
 if __name__ == "__main__":
-    import html  # Добавляем модуль html для экранирования
     main()
