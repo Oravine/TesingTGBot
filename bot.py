@@ -18,7 +18,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 
 def start(update: Update, context: CallbackContext) -> None:
     """Обработчик команды /start"""
-    update.message.reply_text("Бот работает через инлайн режим: @PM_ChBot")
+    update.message.reply_text("Бот работает через инлайн режим:\n```@Druobot <получатель> <сообщение>```")
 
 def handle_inline_button(update: Update, context: CallbackContext) -> None:
     """Обработчик нажатий на инлайн-кнопки"""
