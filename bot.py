@@ -17,11 +17,12 @@ from telegram.ext import (
 TOKEN = os.getenv("BOT_TOKEN")
 
 def start(update: Update, context: CallbackContext) -> None:
-    """Обработчик команды /start"""
-    update.message.reply_text("Бот работает через инлайн режим:\n```@Druobot <получатель> <сообщение>```")
+    """Обработчик команды /start с HTML-форматированием"""
+    help_text = '<b>Используйте бота в инлайн режиме!</b>\n\nНапишите в любой чат:\n<pre>@Druobot [получатель] [сообщение]</pre>'
+    update.message.reply_text(help_text, parse_mode='HTML')
 
 def handle_inline_button(update: Update, context: CallbackContext) -> None:
-    """Обработчик нажатий на инлайн-кнопки"""
+    """Обработчик нажатий на инлайн-кнопки с HTML"""
     query = update.callback_query
     data = query.data.split(":")
     
@@ -38,35 +39,41 @@ def handle_inline_button(update: Update, context: CallbackContext) -> None:
         query.answer("❌ Ошибка: неверный ID отправителя")
         return
 
-    # Проверяем, кто нажал на кнопку (отправитель или получатель)
+    # Форматируем текст сообщения с HTML
+    formatted_text = f"""
+<b>🔒 Личное сообщение:</b>
+<i>{html.escape(message_text)}</i>
+"""
+    # Проверяем, кто нажал на кнопку
     if (current_user.username and current_user.username.lower() == recipient_username.lower()) or current_user.id == sender_id:
-        query.answer(message_text, show_alert=True)
+        query.answer(formatted_text, show_alert=True, parse_mode='HTML')
     else:
-        query.answer("⚠️🔒 Это сообщение не для вас.", show_alert=True)
+        query.answer("🔒 Это сообщение не для вас", show_alert=True)
 
 def handle_inline_query(update: Update, context: CallbackContext) -> None:
-    """Обработчик инлайн-запросов"""
+    """Обработчик инлайн-запросов с HTML"""
     query_text = update.inline_query.query.strip()
     
     if not query_text:
         return
 
-    # Разбиваем запрос на получателя и сообщение
     parts = query_text.split(maxsplit=1)
     if len(parts) < 2:
         return
 
     recipient_username, message_text = parts
-    recipient_username = recipient_username.lstrip('@')  # Удаляем @ если есть
+    recipient_username = recipient_username.lstrip('@')
 
-    # Создаем результат для инлайн-режима
+    # Форматируем текст для инлайн-режима с HTML
+    formatted_text = f'<b>🔒 Личное сообщение для @{recipient_username}</b>\nЧтобы прочитать его, нажмите кнопку ниже. <i>Сообщение увидите только вы.</i>'
     results = [
         InlineQueryResultArticle(
             id="1",
             title=f"Отправить {recipient_username}",
-            description=message_text[:100],  # Показываем начало сообщения
+            description=message_text[:100],
             input_message_content=InputTextMessageContent(
-                f"**🔒 Личное сообщение для @{recipient_username}.**\nНажмите кнопку ниже, чтобы прочитать его. __Сообщение увидите только вы.__"
+                formatted_text,
+                parse_mode='HTML'
             ),
             reply_markup=InlineKeyboardMarkup([[
                 InlineKeyboardButton(
@@ -80,19 +87,17 @@ def handle_inline_query(update: Update, context: CallbackContext) -> None:
     update.inline_query.answer(results)
 
 def main() -> None:
-    """Основная функция запуска бота"""
     updater = Updater(TOKEN)
     dispatcher = updater.dispatcher
 
-    # Регистрируем обработчики
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CallbackQueryHandler(handle_inline_button))
     dispatcher.add_handler(InlineQueryHandler(handle_inline_query))
 
-    # Запускаем бота
-    print("Бот запущен...")
+    print("Бот запущен с поддержкой HTML-форматирования...")
     updater.start_polling()
     updater.idle()
 
 if __name__ == "__main__":
+    import html  # Добавляем модуль html для экранирования
     main()
