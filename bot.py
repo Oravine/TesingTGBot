@@ -66,7 +66,7 @@ def handle_inline_query(update: Update, context: CallbackContext) -> None:
             title=f"Отправить {recipient_username}",
             description=message_text[:100],  # Показываем начало сообщения
             input_message_content=InputTextMessageContent(
-                f"<b>🔒 Личное сообщение для @{recipient_username}.</b>\nНажмите кнопку ниже, чтобы прочитать его. <i>Сообщение увидите только вы.</i>"
+                f"**🔒 Личное сообщение для @{recipient_username}.**\nНажмите кнопку ниже, чтобы прочитать его. __Сообщение увидите только вы.__"
             ),
             reply_markup=InlineKeyboardMarkup([[
                 InlineKeyboardButton(
